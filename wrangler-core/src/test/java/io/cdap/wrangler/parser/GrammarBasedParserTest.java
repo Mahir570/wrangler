@@ -15,14 +15,25 @@
  */
 
 package io.cdap.wrangler.parser;
+import io.cdap.wrangler.api.parser.SyntaxError;
+// import io.cdap.wrangler.api.parser.ColumnName;
+// import io.cdap.wrangler.api.parser.DirectiveName;
+// import io.cdap.wrangler.api.parser.Text;
+import io.cdap.wrangler.api.parser.Token;
+import io.cdap.wrangler.api.RecipeSymbol;
+
+
 
 import io.cdap.wrangler.TestingRig;
 import io.cdap.wrangler.api.CompileStatus;
 import io.cdap.wrangler.api.Compiler;
+import io.cdap.wrangler.api.TokenGroup;
 import io.cdap.wrangler.api.Directive;
 import io.cdap.wrangler.api.RecipeParser;
 import org.junit.Assert;
 import org.junit.Test;
+import java.util.Iterator;
+
 
 import java.util.List;
 
@@ -74,5 +85,74 @@ public class GrammarBasedParserTest {
     List<Directive> directives = parser.parse();
     Assert.assertEquals(0, directives.size());
   }
+
+
+  // custom test
+  @Test
+  public void testByteSizeAndTimeDurationParsing() throws Exception {
+    String recipe = "aggregate-stats :size :time total_size total_time 'MB' 'seconds'";
+  
+    // Create a RecipeCompiler instance
+    RecipeCompiler compiler = new RecipeCompiler();
+    
+    // Compile the recipe and get the CompileStatus
+    CompileStatus status = compiler.compile(recipe);
+  
+    // Check if the compilation was successful
+    if (status.isSuccess()) {
+      // Retrieve the symbols (RecipeSymbol) from CompileStatus
+      RecipeSymbol symbol = status.getSymbols();
+  
+      // Check if symbol contains token groups (these are parsed directives)
+      Assert.assertNotNull(symbol);
+      
+      // Use iterator() to iterate over TokenGroup objects
+      Iterator<TokenGroup> tokenGroups = symbol.iterator();
+      int groupIndex = 0;
+  
+      while (tokenGroups.hasNext()) {
+        TokenGroup tokenGroup = tokenGroups.next();
+        
+        // Iterate over the tokens in each TokenGroup
+        Iterator<Token> tokens = tokenGroup.iterator();
+        int tokenIndex = 0;
+        
+        while (tokens.hasNext()) {
+          Token token = tokens.next();
+          
+          // Example assertions to validate expected tokens
+          if (groupIndex == 0 && tokenIndex == 0) {
+            Assert.assertEquals("aggregate-stats", token.value());
+          } else if (groupIndex == 0 && tokenIndex == 1) {
+            Assert.assertEquals("size", token.value());
+          } else if (groupIndex == 0 && tokenIndex == 2) {
+            Assert.assertEquals("time", token.value());
+          } else if (groupIndex == 0 && tokenIndex == 3) {
+            Assert.assertEquals("total_size", token.value());
+          } else if (groupIndex == 0 && tokenIndex == 4) {
+            Assert.assertEquals("total_time", token.value());
+          } else if (groupIndex == 0 && tokenIndex == 5) {
+            Assert.assertEquals("MB", token.value());
+          } else if (groupIndex == 0 && tokenIndex == 6) {
+            Assert.assertEquals("seconds", token.value());
+          }
+  
+          tokenIndex++;
+        }
+        groupIndex++;
+      }
+    } else {
+      // Handle compilation error (if any)
+      Iterator<SyntaxError> errors = status.getErrors();
+      while (errors.hasNext()) {
+        SyntaxError error = errors.next();
+        System.out.println("Syntax Error: " + error.getMessage());
+      }
+      Assert.fail("Compilation failed, errors found.");
+    }
+  }
+  
+
+
 
 }
