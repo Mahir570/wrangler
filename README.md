@@ -31,6 +31,29 @@ More [here](wrangler-docs/upcoming-features.md) on upcoming features.
   * A new capability that allows CDAP Administrators to **restrict the directives** that are accessible to their users.
 More information on configuring can be found [here](wrangler-docs/exclusion-and-aliasing.md)
 
+
+## 🔧 Enhancements: Byte Size & Time Duration + AggregateStats Directive
+
+As part of the engineering assignment, the following capabilities were added to Wrangler:
+
+### ✅ New Token Types
+
+#### `ByteSize`
+Parses values like `"1KB"`, `"10MB"`, `"2.5GB"` and converts them to bytes internally (binary base — 1024).
+
+#### `TimeDuration`
+Parses values like `"1s"`, `"100ms"`, `"2.5min"` and converts them to milliseconds.
+
+| Byte Size Units | Examples               |
+|------------------|-----------------------|
+| B, KB, MB, GB    | `1024B`, `1KB`, `2.5MB` |
+
+| Time Duration Units | Examples               |
+|----------------------|-----------------------|
+| ms, s, min           | `100ms`, `1s`, `2.5min` |
+
+These are case-insensitive, follow binary units for bytes, and millisecond precision for time.
+
 ## Demo Videos and Recipes
 
 Videos and Screencasts are best way to learn, so we have compiled simple, short screencasts that shows some of the features of Data Prep. Additional videos can be found [here](https://www.youtube.com/playlist?list=PLhmsf-NvXKJn-neqefOrcl4n7zU4TWmIr)
